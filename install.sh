@@ -8,7 +8,7 @@ YOUR_NAME="John Doe"
 PROJECT_DIRECTORY="projects"
 
 # set your timezone
-sudo timedatectl set-timezone Europe/London
+sudo timedatectl set-timezone $TIMEZONE
 
 # choose keyboard layout
 sudo dpkg-reconfigure keyboard-configuration
