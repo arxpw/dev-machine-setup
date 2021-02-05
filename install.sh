@@ -24,6 +24,14 @@ case "$choice" in
 esac
 
 # phpstorm
+read -p "Install Insomnia? (y/n)" choice
+case "$choice" in
+  y|Y ) sudo snap install insomnia;;
+  n|N ) echo "Not installing..";;
+  * ) echo "Invalid choice";;
+esac
+
+# phpstorm
 read -p "Install PhpStorm? (y/n)" choice
 case "$choice" in
   y|Y ) sudo snap install phpstorm --classic;;
@@ -86,3 +94,11 @@ case "$choice" in
 esac
 
 mkdir ~/$PROJECT_DIRECTORY && cd ~/$PROJECT_DIRECTORY
+
+# set ubuntu dock favorites?
+read -p "Set dock favorites? ( requires chrome, vscode, phpstorm + insomnia to be installed ) (y/n)" choice
+case "$choice" in
+  y|Y ) gsettings set org.gnome.shell favorite-apps "['google-chrome.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'code_code.desktop', 'phpstorm_phpstorm.desktop', 'insomnia_insomnia.desktop']";;
+  n|N ) echo "Not installing..";;
+  * ) echo "Invalid choice";;
+esac
