@@ -11,7 +11,13 @@ PROJECT_DIRECTORY="projects"
 sudo timedatectl set-timezone $TIMEZONE
 
 # choose keyboard layout
-sudo dpkg-reconfigure keyboard-configuration
+read -p "Change keyboard layout? (y/n)" choice
+case "$choice" in
+  y|Y ) sudo dpkg-reconfigure keyboard-configuration;;
+  n|N ) echo "Not installing..";;
+  * ) echo "Skipping..";;
+esac
+
 sudo apt-get update
 
 # php
@@ -60,7 +66,7 @@ esac
 # chrome
 read -p "Install Google Chrome? (y/n)" choice
 case "$choice" in
-  y|Y ) wget -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb ~/Downloads && \
+  y|Y ) wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb ~/Downloads && \
 	sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb;;
   n|N ) echo "Not installing..";;
   * ) echo "Skipping..";;
@@ -98,8 +104,6 @@ case "$choice" in
   * ) echo "Skipping..";;
 esac
 
-mkdir ~/$PROJECT_DIRECTORY && cd ~/$PROJECT_DIRECTORY
-
 # set ubuntu dock favorites?
 read -p "Set dock favorites? ( requires chrome, vscode, phpstorm + insomnia to be installed ) (y/n)" choice
 case "$choice" in
@@ -107,3 +111,5 @@ case "$choice" in
   n|N ) echo "Not installing..";;
   * ) echo "Skipping..";;
 esac
+
+mkdir ~/$PROJECT_DIRECTORY && cd ~/$PROJECT_DIRECTORY
