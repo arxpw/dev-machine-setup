@@ -12,6 +12,6 @@ Quick script to set your keyboard layout, timezone and prompts you if you want t
 Installation ( if you don't have git.. )
 
 ```
-chmod +rwx install.sh install-php.sh
 sudo apt-get install git -y && git clone git@github.com:arxpw/dev-machine-setup.git
+chmod +rwx install.sh install-php.sh
 ```
