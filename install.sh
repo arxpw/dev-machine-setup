@@ -1,89 +1,53 @@
-#/bin/sh
+#!/bin/bash
 
-TIMEZONE="Europe/London"
+config_file=settings.conf
 
-YOUR_EMAIL="john.doe@example.com"
-YOUR_NAME="John Doe"
+if [ ! -f $config_file ];
+  then echo "Copy the settings.defaults file to a $config_file file, and configure this to your liking."
+  exit 1;
+fi
 
-PROJECT_DIRECTORY="projects"
+source $config_file
 
-# set your timezone
-sudo timedatectl set-timezone $TIMEZONE
+function setupPHP {
+  sudo ./install-php.sh
+}
 
-# choose keyboard layout
-read -p "Change keyboard layout? (y/n)" choice
-case "$choice" in
-  y|Y ) sudo dpkg-reconfigure keyboard-configuration;;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
+function setupGIT {
+  sudo apt-get install git && git config --global user.email $YOUR_EMAIL && git config --global user.name $YOUR_NAME
+  echo 'Git configured!'
+}
 
-sudo apt-get update
+function setupInsomnia {
+  sudo snap install phpstorm --classic
+}
 
-# php
-read -p "Install PHP7.4 + Extensions? (y/n)" choice
-case "$choice" in
-  y|Y ) sudo ./install-php.sh;;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
+function setupTimezone {
+  sudo timedatectl set-timezone $TIMEZONE
+}
 
-# phpstorm
-read -p "Install Insomnia? (y/n)" choice
-case "$choice" in
-  y|Y ) sudo snap install insomnia;;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
+function setupPhpStorm {
+  sudo snap install phpstorm --classic
+}
 
-# phpstorm
-read -p "Install PhpStorm? (y/n)" choice
-case "$choice" in
-  y|Y ) sudo snap install phpstorm --classic;;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
+function setupVsCode {
+  sudo snap install code --classic
+}
 
-# phpstorm
-read -p "Install VsCode? (y/n)" choice
-case "$choice" in
-  y|Y ) sudo snap install code --classic;;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
+function setupZsh {
+  sudo apt-get install zsh -y && sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+}
 
-# version control
-sudo apt-get install curl git wget -y
+function setupChrome {
+  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb ~/Downloads && sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb
+}
 
-# set git defaults?
-read -p "Set git defaults? (y/n)" choice
-case "$choice" in
-  y|Y ) git config --global user.email $YOUR_EMAIL && git config --global user.name $YOUR_NAME;;
-  n|N ) echo "Not configuring..";;
-  * ) echo "Skipping..";;
-esac
+function setupDock {
+  gsettings set org.gnome.shell favorite-apps "['google-chrome.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'code_code.desktop', 'phpstorm_phpstorm.desktop', 'insomnia_insomnia.desktop']"
+}
 
-# chrome
-read -p "Install Google Chrome? (y/n)" choice
-case "$choice" in
-  y|Y ) wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb ~/Downloads && \
-	sudo dpkg -i ~/Downloads/google-chrome-stable_current_amd64.deb;;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
-
-# zsh
-read -p "Install ZSH + oh-my-zsh? (y/n)" choice
-case "$choice" in 
-  y|Y ) sudo apt-get install zsh -y && sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)";;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
-
-# docker
-read -p "Install docker? (y/n)" choice
-case "$choice" in 
-  y|Y ) sudo apt-get install \
+function setupDocker {
+  sudo apt-get install \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -99,17 +63,35 @@ case "$choice" in
     sudo apt-get install docker-ce docker-ce-cli containerd.io && \
     sudo usermod -aG docker $USER && echo "Please restart to be able to use docker as your normal user." && \
     sudo wget https://github.com/docker/compose/releases/download/1.28.2/docker-compose-Linux-x86_64 -O /usr/local/bin/docker-compose && sudo chmod +rwx /usr/local/bin/docker-compose
-;;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
+}
 
-# set ubuntu dock favorites?
-read -p "Set dock favorites? ( requires chrome, vscode, phpstorm + insomnia to be installed ) (y/n)" choice
-case "$choice" in
-  y|Y ) gsettings set org.gnome.shell favorite-apps "['google-chrome.desktop', 'thunderbird.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'code_code.desktop', 'phpstorm_phpstorm.desktop', 'insomnia_insomnia.desktop']";;
-  n|N ) echo "Not installing..";;
-  * ) echo "Skipping..";;
-esac
+whiptail --title "Dev Machine Setup" --checklist --separate-output "Choose what to setup" 20 30 10 \
+  "SETUP_GIT" "" $SETUP_GIT \
+  "SETUP_PHP" "" $SETUP_PHP \
+  "SETUP_TIMEZONES" "" $SETUP_TIMEZONES \
+  "SETUP_INSOMNIA" "" $SETUP_INSOMNIA \
+  "SETUP_PHPSTORM" "" $SETUP_PHPSTORM \
+  "SETUP_VSCODE" "" $SETUP_VSCODE \
+  "SETUP_GOOGLE_CHROME" "" $SETUP_GOOGLE_CHROME \
+  "SETUP_ZSH" "" $SETUP_ZSH \
+  "SETUP_DOCKER" "" $SETUP_DOCKER \
+  "SETUP_DOCK" "" $SETUP_DOCK \
+  2>results
 
-mkdir ~/$PROJECT_DIRECTORY && cd ~/$PROJECT_DIRECTORY
+while read choice
+do
+  case $choice in
+    "SETUP_GIT") setupGIT ;;
+    "SETUP_PHP") setupPHP ;;
+    "SETUP_TIMEZONES") setupTimezone ;;
+    "SETUP_INSOMNIA") setupInsomnia ;;
+    "SETUP_PHPSTORM") setupPhpStorm ;;
+    "SETUP_VSCODE") setupVsCode ;;
+    "SETUP_GOOGLE_CHROME") setupChrome ;;
+    "SETUP_ZSH") setupZsh ;;
+    "SETUP_DOCKER") setupDocker ;;
+    "SETUP_DOCK") setupDock ;;
+    *)
+    ;;
+  esac
+done < results
