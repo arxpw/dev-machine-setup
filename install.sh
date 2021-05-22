@@ -10,7 +10,9 @@ fi
 source $config_file
 
 function setupPHP {
+  echo 'PHP Installation Started'
   sudo ./install-php.sh
+  echo 'PHP Installation Finished'
 }
 
 function setupGIT {
@@ -65,33 +67,35 @@ function setupDocker {
     sudo wget https://github.com/docker/compose/releases/download/1.28.2/docker-compose-Linux-x86_64 -O /usr/local/bin/docker-compose && sudo chmod +rwx /usr/local/bin/docker-compose
 }
 
-whiptail --title "Dev Machine Setup" --checklist --separate-output "Choose what to setup" 20 30 10 \
-  "SETUP_GIT" "" $SETUP_GIT \
-  "SETUP_PHP" "" $SETUP_PHP \
-  "SETUP_TIMEZONES" "" $SETUP_TIMEZONES \
-  "SETUP_INSOMNIA" "" $SETUP_INSOMNIA \
-  "SETUP_PHPSTORM" "" $SETUP_PHPSTORM \
-  "SETUP_VSCODE" "" $SETUP_VSCODE \
-  "SETUP_GOOGLE_CHROME" "" $SETUP_GOOGLE_CHROME \
-  "SETUP_ZSH" "" $SETUP_ZSH \
-  "SETUP_DOCKER" "" $SETUP_DOCKER \
-  "SETUP_DOCK" "" $SETUP_DOCK \
-  2>results
+OPTIONS=$(whiptail --title "Dev Machine Setup" --checklist --separate-output \
+"Choose" 20 78 10 \
+"SETUP_GIT" "" $SETUP_GIT \
+"SETUP_PHP" "" $SETUP_PHP \
+"SETUP_TIMEZONES" "" $SETUP_TIMEZONES \
+"SETUP_INSOMNIA" "" $SETUP_INSOMNIA \
+"SETUP_PHPSTORM" "" $SETUP_PHPSTORM \
+"SETUP_VSCODE" "" $SETUP_VSCODE \
+"SETUP_GOOGLE_CHROME" "" $SETUP_GOOGLE_CHROME \
+"SETUP_ZSH" "" $SETUP_ZSH \
+"SETUP_DOCKER" "" $SETUP_DOCKER \
+"SETUP_DOCK" "" $SETUP_DOCK 3>&1 1>&2 2>&3)
 
-while read choice
-do
-  case $choice in
-    "SETUP_GIT") setupGIT ;;
-    "SETUP_PHP") setupPHP ;;
-    "SETUP_TIMEZONES") setupTimezone ;;
-    "SETUP_INSOMNIA") setupInsomnia ;;
-    "SETUP_PHPSTORM") setupPhpStorm ;;
-    "SETUP_VSCODE") setupVsCode ;;
-    "SETUP_GOOGLE_CHROME") setupChrome ;;
-    "SETUP_ZSH") setupZsh ;;
-    "SETUP_DOCKER") setupDocker ;;
-    "SETUP_DOCK") setupDock ;;
-    *)
-    ;;
-  esac
-done < results
+# if the status is 0, success
+if [ $? = 0 ]; then
+  for choice in $OPTIONS; do
+    case $choice in
+      "SETUP_GIT") setupGIT ;;
+      "SETUP_PHP") setupPHP ;;
+      "SETUP_TIMEZONES") setupTimezone ;;
+      "SETUP_INSOMNIA") setupInsomnia ;;
+      "SETUP_PHPSTORM") setupPhpStorm ;;
+      "SETUP_VSCODE") setupVsCode ;;
+      "SETUP_GOOGLE_CHROME") setupChrome ;;
+      "SETUP_ZSH") setupZsh ;;
+      "SETUP_DOCKER") setupDocker ;;
+      "SETUP_DOCK") setupDock ;;
+      *)
+      ;;
+    esac
+  done
+fi
