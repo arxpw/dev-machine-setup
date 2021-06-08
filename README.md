@@ -16,17 +16,11 @@ Quick script to set your timezone and allows you to install specific tools, curr
 
 
 ```
-sudo apt-get install git -y && git clone git@github.com:arxpw/dev-machine-setup.git
+sudo apt-get install git -y && git clone https://github.com/arxpw/dev-machine-setup.git
+
 chmod +rwx install.sh install-php.sh
-```
 
-Usage
-
-```
 cp settings.defaults settings.conf
+
+./install.sh
 ```
-
-Edit your `settings.conf` file and change any defaults you require.
-
-Run
-`./install.sh`
